@@ -1,0 +1,132 @@
+<%- include('partials/head') %>
+<style>
+    .container {
+        margin-top: 10px;
+    }
+
+    h2 {
+        text-align: center;
+        font-size: 2rem;
+        color: #343a40;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+
+    .card {
+        display: flex;
+        flex-direction: column; /* Allowing vertical alignment */
+        align-items: center;
+        justify-content: center;
+        border: none; /* Remove default border */
+        border-radius: 15px; /* Rounded corners */
+        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effect */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Default shadow for cards */
+    }
+
+    .card:hover {
+        transform: translateY(10px); /* Slightly elevate card on hover */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Elevated shadow on hover */
+    }
+
+    .card-img-top {
+        max-width: 200px;
+        height: auto;
+        border-radius: 10px;
+        border: 2px solid #dee2e6;
+        margin-bottom: 20px;
+    }
+
+    .card-title {
+        font-weight: bold; /* Make product title bold */
+        font-size: 1.5rem; /* Adjust title size */
+        color: #333; /* Darker color for better visibility */
+        margin: 10px 0; /* Spacing around title */
+    }
+
+    .card-text {
+        color: #555; /* Softer color for text */
+        font-size: 1rem; /* Standardize font size for product info */
+        margin: 5px 0; /* Spacing around text */
+    }
+
+    .btn-info {
+        background-color: #007bff; /* Bootstrap primary color */
+        border: none; /* Remove border */
+        padding: 10px 20px; /* Button padding */
+        border-radius: 5px; /* Rounded button */
+        color: white; /* White text for contrast */
+        font-size: 1rem; /* Standardize button font size */
+        transition: background-color 0.3s; /* Transition for button color */
+        text-align: center; /* Center text in button */
+        margin-top: auto; /* Push the button to the bottom */
+    }
+
+    .btn-info:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+    }
+
+    .card-footer {
+        background-color: #f8f9fa; /* Light background for footer */
+        border-top: 1px solid #dee2e6; /* Subtle top border */
+        padding: 10px; /* Footer padding */
+        border-radius: 0 0 15px 15px; /* Rounded corners for footer */
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        h2 {
+            font-size: 1.5rem; /* Adjust title size on small screens */
+        }
+
+        .btn-info {
+            font-size: 0.9rem; /* Adjust button size on small screens */
+        }
+
+        .card-img-top {
+            height: 150px; /* Adjust image height on smaller screens */
+        }
+    }
+    .text-left {
+        text-align: left; /* Align text to the left */
+        margin-bottom: 20px; /* Space below the header */
+        color: #343a40; /* Optional: Match color to your design */
+    }
+
+</style>
+<%- include('partials/adminnavbar') %>
+
+<div class="container mt-5">
+    <h2 class="text-left">View Products</h2> 
+    <% if (messages.success) { %>
+        <div class="alert alert-success">
+            <%= messages.success %>
+        </div>
+    <% } %>
+
+    <!-- Error Message -->
+    <% if (messages.error) { %>
+        <div class="alert alert-danger">
+            <%= messages.error %>
+        </div>
+    <% } %>
+
+    <div class="row">
+        <% products.forEach(product => { %>
+            <div class="col-md-4 mb-4"> <!-- Adjust the column size based on your needs -->
+                <div class="card">
+                    <img src="<%= product.Picture %>" class="card-img-top" alt="<%= product.ProductName %>">
+                    <div class="card-body d-flex flex-column"> <!-- Flex column for proper alignment -->
+                        <h5 class="card-title"><%= product.ProductName %></h5>
+                        <p class="card-text">Price: $<%= product.Price %></p>
+                        <p class="card-text">Stock: <%= product.NumberOfStock %></p>
+                        <div class="mt-auto"> <!-- Push the button to the bottom -->
+                            <a href="/product/<%= product.ProductID %>" class="btn btn-info">View</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+</div>
+
+<%- include('partials/script') %>

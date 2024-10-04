@@ -1,0 +1,128 @@
+<%- include('partials/head') %>
+<style>
+    h1 {
+        color: #343a40; 
+        font-size: 2.5rem; 
+        margin-bottom: 20px; 
+    }
+
+    .table-container {
+        max-height: 500px; 
+        overflow-y: auto; 
+        border: 1px solid #dee2e6; 
+        border-radius: 8px; 
+    }
+
+    .table {
+        border-radius: 0; 
+    }
+
+    .table th {
+        background-color: #007bff; 
+        color: white; 
+    }
+
+    .table th, .table td {
+        text-align: center; 
+    }
+
+    .form-group label {
+        font-weight: bold; 
+    }
+
+    #productName {
+        background-color: #e9ecef; 
+    }
+
+    .btn-success {
+        background-color: #28a745; 
+        border-color: #28a745; 
+    }
+
+    .btn-success:hover {
+        background-color: #218838; 
+        border-color: #1e7e34; 
+    }
+
+    .alert {
+        margin-top: 20px; 
+    }
+
+    .text-left {
+        text-align: left; 
+        margin-bottom: 20px; 
+        color: #343a40; 
+    }
+
+    .accept-btn {
+        background-color: #28a745; 
+        border: none; 
+        color: white; 
+        padding: 10px 15px; 
+        border-radius: 5px; 
+        cursor: pointer; 
+        transition: background-color 0.3s; 
+    }
+
+    .accept-btn:hover {
+        background-color: #218838; 
+    }
+
+    /* Fixed header styles */
+    thead th {
+        position: sticky; 
+        top: 0; 
+        background-color: #007bff; 
+        z-index: 1; 
+    }
+</style>
+<%- include('partials/adminnavbar') %>
+
+<div class="container mt-4">
+    <h1 class="text-left">Inventory</h1>
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <form id="searchForm" action="/inventory" method="GET" class="form-inline">
+            <div class="input-group">
+                <input type="text" id="searchQuery" name="search" class="form-control" placeholder="Search Inventory" required>
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </div>
+        </form>
+
+        <div>
+            <a class="btn btn-success mr-2" href="/inventory/download">Download Excel</a>
+            <form id="clearInventoryForm" action="/inventory/clear" method="POST" class="d-inline">
+                <button type="submit" class="btn btn-danger">Clear Inventory</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="table-container">
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>Inventory ID</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Changes Type</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% inventory.forEach(item => { %>
+                    <tr>
+                        <td><%= item.InventoryID %></td>
+                        <td><%= item.ProductName %></td>
+                        <td><%= item.Quantity %></td>
+                        <td><%= item.Changes_type %></td>
+                        <td><%= item.Date %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<%- include('partials/script') %>

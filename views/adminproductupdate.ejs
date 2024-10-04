@@ -1,0 +1,172 @@
+<%- include('partials/head') %>
+
+<style>
+    /* Header styling */
+    h2 {
+        text-align: center;
+        color: #343a40;
+        font-size: 28px;
+        margin-bottom: 30px;
+    }
+
+    /* Image styling */
+    .text-center img {
+        max-width: 200px;
+        height: auto;
+        border-radius: 10px;
+        border: 2px solid #dee2e6;
+        margin-bottom: 20px;
+    }
+
+    .text-center p {
+        font-size: 16px;
+        color: #6c757d;
+        margin-bottom: 20px;
+    }
+
+    /* Form styling */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: #495057;
+    }
+
+    .form-control,
+    .form-control-file {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+
+    /* Input focus effect */
+    .form-control:focus,
+    .form-control-file:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        outline: none;
+    }
+
+    /* Button styling */
+    .btn-primary {
+        background-color: #007bff;
+        color: #fff;
+        padding: 12px;
+        width: 100%;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-bottom: 10px;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    /* Delete button styling */
+    .btn-danger {
+        background-color: #dc3545;
+        color: #fff;
+        padding: 12px;
+        width: 100%;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px;
+        }
+    }
+    .text-left {
+        text-align: left; /* Align text to the left */
+        margin-bottom: 20px; /* Space below the header */
+        color: #343a40; /* Optional: Match color to your design */
+    }
+
+</style>
+
+<%- include('partials/adminnavbar') %>
+
+<div class="container mt-5">
+    <% if (messages.success) { %>
+        <div class="alert alert-success">
+            <%= messages.success %>
+        </div>
+    <% } %>
+
+    <!-- Error Message -->
+    <% if (messages.error) { %>
+        <div class="alert alert-danger">
+            <%= messages.error %>
+        </div>
+    <% } %>
+
+    <h2 class="text-left">Update Product</h2>
+
+    <!-- Display current product image at the top center -->
+    <div class="text-center mb-4">
+        <% if (product.Picture) { %>
+            <img src="<%= product.Picture %>" alt="<%= product.ProductName %>" class="img-fluid">
+        <% } else { %>
+            <p>No image available for this product.</p>
+        <% } %>
+    </div>
+
+    <form action="/updateproduct/<%= product.ProductID %>" method="POST">
+        <div class="form-group">
+            <label for="ProductName">Product Name</label>
+            <input type="text" class="form-control" name="ProductName" value="<%= product.ProductName %>" required />
+        </div>
+        <div class="form-group">
+            <label for="Price">Price</label>
+            <input type="number" class="form-control" name="Price" value="<%= product.Price %>" required />
+        </div>
+        <div class="form-group">
+            <label for="NumberOfStock">Number of Stock</label>
+            <input type="number" class="form-control" name="NumberOfStock" value="<%= product.NumberOfStock %>" required />
+        </div>
+        <div class="form-group">
+            <label for="Description">Description</label>
+            <textarea class="form-control" name="Description" required><%= product.Description %></textarea>
+        </div>
+        <div class="form-group">
+            <label for="category">Category</label>
+    <select id="category" name="Category" class="form-control" required>
+        <option value="">Select Category</option>
+        <option value="Tools and Power Tools" <%= product.Category === "Tools and Power Tools" ? 'selected' : '' %>>Tools and Power Tools</option>
+        <option value="Building Materials" <%= product.Category === "Building Materials" ? 'selected' : '' %>>Building Materials</option>
+        <option value="Plumbing Supplies" <%= product.Category === "Plumbing Supplies" ? 'selected' : '' %>>Plumbing Supplies</option>
+        <option value="Electrical Supplies" <%= product.Category === "Electrical Supplies" ? 'selected' : '' %>>Electrical Supplies</option>
+        <option value="Paint and Painting Supplies" <%= product.Category === "Paint and Painting Supplies" ? 'selected' : '' %>>Paint & Supplies</option>
+        <option value="Gardening" <%= product.Category === "Gardening" ? 'selected' : '' %>>Gardening</option>
+    </select>
+
+            
+        </div>
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+    
+
+    <!-- Delete Product Button -->
+    <form action="/deleteproduct/<%= product.ProductID %>" method="POST" onsubmit="return confirm('Are you sure you want to delete this product?');">
+        <button type="submit" class="btn btn-danger mt-2">Delete Product</button>
+    </form>
+</div>
+
+<%- include('partials/script') %>

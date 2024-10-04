@@ -1,0 +1,149 @@
+<%- include('partials/head') %>
+<%- include('partials/adminnavbar') %>
+
+<style>
+    h1 {
+        color: #343a40; /* Dark text color */
+        font-size: 2.5rem; /* Larger font size */
+        margin-bottom: 20px; /* Space below the header */
+    }
+
+    .table {
+        border-radius: 8px; /* Rounded corners for table */
+        overflow: hidden; /* Ensures rounded corners are visible */
+    }
+
+    .table th {
+        background-color: #007bff; /* Blue header */
+        color: white; /* White text for header */
+    }
+
+    .table th, .table td {
+        text-align: center; /* Center-aligning text */
+    }
+
+    .form-group label {
+        font-weight: bold; /* Bold label text */
+    }
+
+    #productName {
+        background-color: #e9ecef; /* Light gray background for read-only input */
+    }
+
+    .btn-success {
+        background-color: #28a745; /* Custom green color */
+        border-color: #28a745; /* Border color for the button */
+    }
+
+    .btn-success:hover {
+        background-color: #218838; /* Darker green on hover */
+        border-color: #1e7e34; /* Darker border on hover */
+    }
+
+    .alert {
+        margin-top: 20px; /* Space above alert */
+    }
+
+    .text-left {
+        text-align: left; /* Align text to the left */
+        margin-bottom: 20px; /* Space below the header */
+        color: #343a40; /* Optional: Match color to your design */
+    }
+
+    .table-responsive {
+        position: relative;
+        max-height: 400px; /* Adjust as needed */
+        overflow-y: auto; /* Allow vertical scrolling */
+    }
+
+    /* Fixed header styles */
+    thead th {
+        position: sticky; /* Make header sticky */
+        top: 0; /* Position it at the top */
+        background-color: #007bff; /* Match header color */
+        z-index: 1; /* Ensure it appears above other content */
+    }
+
+    /* Optional styling for the table */
+    tbody tr:nth-child(even) {
+        background-color: #f2f2f2; /* Alternate row color */
+    }
+</style>
+
+<div class="container mt-4">
+    <h1 class="text-left">Restock Product</h1>
+    <% if (messages.success) { %>
+        <div class="alert alert-success">
+            <%= messages.success %>
+        </div>
+    <% } %>
+
+    <!-- Error Message -->
+    <% if (messages.error) { %>
+        <div class="alert alert-danger">
+            <%= messages.error %>
+        </div>
+    <% } %>
+
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">Product ID</th>
+                    <th scope="col">Product Name</th>
+                    <th scope="col">Number of Stock</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% products.forEach(product => { %>
+                    <tr onclick="selectProduct('<%= product.ProductName %>', '<%= product.NumberOfStock %>')" style="cursor:pointer;">
+                        <td><%= product.ProductID %></td>
+                        <td><%= product.ProductName %></td>
+                        <td><%= product.NumberOfStock %></td>
+                        <td><%= product.Category %></td>
+                        <td><%= product.Status %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Non-editable textbox for selected product name -->
+    <div class="form-group mt-4">
+        <label for="productName">Selected Product</label>
+        <input type="text" id="productName" class="form-control" readonly>
+    </div>
+
+    <!-- Editable textbox for quantity input -->
+    <div class="form-group">
+        <label for="quantity">Quantity to Restock</label>
+        <input type="number" id="quantity" class="form-control" min="1" required>
+    </div>
+
+    <!-- Form to handle restock submission -->
+    <form action="/restock" method="POST" id="restockForm">
+        <input type="hidden" name="ProductName" id="hiddenProductName">
+        <input type="hidden" name="Quantity" id="hiddenQuantity">
+        <button type="submit" class="btn btn-success btn-block mt-3">Restock Product</button>
+    </form>
+</div>
+
+<%- include('partials/script') %>
+
+<script>
+    function selectProduct(productName, currentStock) {
+        document.getElementById('productName').value = productName;
+        document.getElementById('hiddenProductName').value = productName;
+        document.getElementById('quantity').value = ''; // Reset quantity
+        document.getElementById('hiddenQuantity').value = ''; // Reset hidden quantity
+        // Optionally display current stock, if needed
+        alert(`Current Stock: ${currentStock}`);
+    }
+
+    // Update hidden quantity field when quantity input changes
+    document.getElementById('quantity').addEventListener('input', function() {
+        document.getElementById('hiddenQuantity').value = this.value;
+    });
+</script>

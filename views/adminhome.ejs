@@ -1,0 +1,191 @@
+<%- include('partials/head') %>
+<%- include('partials/adminnavbar') %>
+
+
+<%- include('partials/script') %>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<div class="container mt-4">
+    <h2 class="text-left mb-4">Product Sales Overview</h2>
+
+    <div class="filter-container">
+        <select id="productFilter" hidden>
+            <option value="" hidden>All Products</option>
+        </select>
+        <input type="date" id="dateFilter" hidden/>
+        <button id="filterBtn"hidden>Apply Filters</button>
+    </div>
+
+    <div id="loading" class="text-center mt-3" style="display: none;">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <p>Loading sales data...</p>
+    </div>
+
+    <canvas id="salesChart" style="max-height: 400px;"></canvas> <!-- Single canvas for the multi-series chart -->
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let salesData = []; // Store fetched sales data
+    let salesChart; // Store Chart instance
+
+    // Function to fetch sales data
+    function fetchSalesData() {
+        document.getElementById('loading').style.display = 'block'; // Show loading spinner
+        
+        fetch('/api/sales-data') // Adjust the endpoint as necessary
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                salesData = data; // Store the fetched data
+                populateProductFilter(data);
+                renderChart(data); // Render chart initially
+            })
+            .catch(error => console.error('Error fetching sales data:', error))
+            .finally(() => {
+                document.getElementById('loading').style.display = 'none'; // Hide loading spinner
+            });
+    }
+
+    // Function to populate the product filter dropdown
+    function populateProductFilter(data) {
+        const productFilter = document.getElementById('productFilter');
+        const uniqueProducts = [...new Set(data.map(item => item.ProductName))];
+
+        // Clear existing options
+        productFilter.innerHTML = '<option value="">All Products</option>'; 
+
+        uniqueProducts.forEach(product => {
+            const option = document.createElement('option');
+            option.value = product;
+            option.textContent = product;
+            productFilter.appendChild(option);
+        });
+    }
+
+    // Function to render the multi-series chart
+    function renderChart(data) {
+        const filteredData = data.reduce((acc, item) => {
+            if (!acc[item.ProductName]) {
+                acc[item.ProductName] = [];
+            }
+            acc[item.ProductName].push(item);
+            return acc;
+        }, {});
+
+        const labels = [];
+        const datasets = [];
+
+        // Prepare datasets for each product
+        for (const product in filteredData) {
+            const productData = filteredData[product];
+            const productQuantities = [];
+            
+            productData.forEach(item => {
+                if (!labels.includes(item.Date)) {
+                    labels.push(item.Date); // Add unique dates to labels
+                }
+                productQuantities.push(item.Quantity);
+            });
+
+            datasets.push({
+                label: product,
+                data: productQuantities,
+                borderColor: getRandomColor(), // Generate a random color for each product
+                backgroundColor: 'rgba(0, 0, 0, 0)', // Transparent background
+                fill: false,
+                tension: 0.1 // Smooth line
+            });
+        }
+
+        // If the chart already exists, destroy it before creating a new one
+        if (salesChart) {
+            salesChart.destroy();
+        }
+
+        // Create the chart
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        salesChart = new Chart(ctx, {
+            type: 'line', // Line chart for multi-series
+            data: {
+                labels: labels,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Quantity Sold'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return `${tooltipItem.dataset.label}: ${tooltipItem.raw} sold`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Function to generate random colors for datasets
+    function getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+
+    // Filter sales data based on selected product and date
+    function applyFilters() {
+        const selectedProduct = document.getElementById('productFilter').value;
+        const selectedDate = document.getElementById('dateFilter').value;
+
+        let filteredData = salesData;
+
+        if (selectedProduct) {
+            filteredData = filteredData.filter(item => item.ProductName === selectedProduct);
+        }
+
+        if (selectedDate) {
+            filteredData = filteredData.filter(item => {
+                const itemDate = new Date(item.Date);
+                const filterDate = new Date(selectedDate);
+                return itemDate.toISOString().slice(0, 10) === filterDate.toISOString().slice(0, 10);
+            });
+        }
+
+        renderChart(filteredData); // Re-render chart with filtered data
+    }
+
+    // Event listener for filter button
+    document.getElementById('filterBtn').addEventListener('click', applyFilters);
+
+    // Fetch sales data on page load
+    fetchSalesData();
+</script>
+<%- include('partials/script') %>

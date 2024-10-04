@@ -1,0 +1,73 @@
+<%- include('partials/head')%>
+<%- include('partials/adminnavbar')%>
+
+
+<div class="container mt-5">
+    <!-- Success Message -->
+    <% if (messages.success) { %>
+        <div class="alert alert-success">
+            <%= messages.success %>
+        </div>
+    <% } %>
+
+    <!-- Error Message -->
+    <% if (messages.error) { %>
+        <div class="alert alert-danger">
+            <%= messages.error %>
+        </div>
+    <% } %>
+
+
+<div class="container mt-5">
+    <h2>Add Product</h2>
+    <form action="/addproduct" method="POST" enctype="multipart/form-data">
+        <!-- Product Name -->
+        <div class="form-group">
+            <label for="productName">Product Name</label>
+            <input type="text" id="productName" name="ProductName" class="form-control" required>
+        </div>
+
+        <!-- Price -->
+        <div class="form-group">
+            <label for="price">Price</label>
+            <input type="number" id="price" name="Price" step="0.01" class="form-control" required>
+        </div>
+
+        <!-- Number of Stock -->
+        <div class="form-group">
+            <label for="stock">Number of Stock</label>
+            <input type="number" id="stock" name="NumberOfStock" class="form-control" required>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="Description" rows="4" class="form-control"></textarea>
+        </div>
+
+        <!-- Picture -->
+        <div class="form-group">
+            <label for="picture">Product Picture</label>
+            <input type="file" id="picture" name="Picture" class="form-control-file">
+        </div>
+
+        <!-- Category -->
+        <div class="form-group">
+            <label for="category">Category</label>
+            <select id="category" name="Category" class="form-control" required>
+                <option value="">Select Category</option>
+                <option value="Tools and Power Tools">Tools and Power Tool</option>
+                <option value="Building Materials">Building Materials</option>
+                <option value="Plumbing Supplies">Plumbing Supplies</option>
+                <option value="Electrical Supplies">Electrical Supplies</option>
+                <option value="Paint and Painting Supplies">Paint & Supplies</option>
+                <option value="Gardening">Gardening</option>
+            </select>
+        </div>
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Add Product</button>
+    </form>
+</div>
+
+
+<%- include('partials/script')%>
